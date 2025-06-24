@@ -19,31 +19,35 @@ const FeedbackForm = () => {
     });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    await toast.promise(
-      API.post('/feedback', formData),
-      {
-        pending: ' Sending feedback...',
-        success: ' Feedback submitted successfully!',
-        error: ' Failed to submit feedback. Please try again!',
+    try {
+      const response = await toast.promise(
+        API.post('/feedback', formData),
+        {
+          pending: ' Sending feedback...',
+          success: ' Feedback submitted successfully!',
+          error: ' Failed to submit feedback. Please try again!',
+        }
+      );
+
+      if (response.data.success) {
+        setFormData({
+          name: '',
+          email: '',
+          message: '',
+          category: '',
+        });
       }
-    );
-
-    // Reset form only if the request succeeded
-    setFormData({ name: '', email: '', message: '', category: '' });
-
-  } catch (error) {
-    console.error('Submission error:', error);
-    // Error toast is already shown by toast.promise
-  } finally {
-    setLoading(false);
-  }
-};
-
+    } catch (error) {
+      console.error('Submission error:', error);
+      // Error handled via toast.promise
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
